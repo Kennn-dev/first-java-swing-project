@@ -2,10 +2,22 @@
 import java.awt.Image;
 import java.io.File;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -21,11 +33,129 @@ public class Drink extends javax.swing.JFrame {
 
     /**
      * Creates new form Drink
-     */
+    
+   */
+    Connection con;
+    PreparedStatement prStmt;
+    ResultSet rsSet;
+    DefaultTableModel table;
+    String finalPath ;
     public Drink() {
         initComponents();
+        Connect();
+        loadDataCombobox();
+        loadDataToList();
+        loadDataToTable();
+    }
+    public void Connect(){
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost/coffee_shop", "root", "");
+        }catch (SQLException ex) {
+                Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+     
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    public ResultSet fetchDataTable(String table){
+        try {
+            String query = "SELECT * FROM "+table;
+            prStmt = con.prepareStatement(query);
+            
+            rsSet = prStmt.executeQuery();
+            
+            } catch (SQLException ex) {
+            Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return rsSet;
     }
     
+    public ResultSet fetchSingleDrink(String idFetch){
+        
+        
+        try {
+            String query = "SELECT * FROM drink WHERE drinkID="+idFetch;
+            prStmt = con.prepareStatement(query);
+            rsSet = prStmt.executeQuery();
+            
+                    } catch (SQLException ex) {
+            Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return rsSet;
+    }
+    
+    public void loadDataToTable(){
+       try {
+            int cursor;
+            rsSet = fetchDataTable("drink");
+            ResultSetMetaData metaData = rsSet.getMetaData();
+            cursor = metaData.getColumnCount();
+            
+            //create a Table model
+            table = (DefaultTableModel)drinkTable.getModel();
+            table.setRowCount(0);
+            
+            while(rsSet.next())
+            {
+                //Each result get values
+//              id , name , price, category
+                String id = rsSet.getInt("drinkID")+"";
+                String price = rsSet.getDouble("price")+"";
+                String name = rsSet.getString("drinkName");
+               
+                //add to Table model a new Row  with these values fetched^^
+                table.addRow(new Object[]{id,name,price});
+                
+                drinkTable.setModel(table);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+        
+    }
+    public void loadDataToList(){
+        DefaultListModel list = new DefaultListModel(); //create a new list model
+        rsSet = fetchDataTable("drinktype");
+        try {
+        while (rsSet.next()) //go through each row that your query returns
+        {
+            int id = rsSet.getInt("drinkTypeID");
+            String itemCode = rsSet.getString("drinkTypeName"); //get the element in column "xxx"
+            list.addElement(itemCode + " - "+id); //add each item to the model
+           
+        }
+        jList1.setModel(list); //set model to jList1
+         } catch (SQLException ex) {
+                Logger.getLogger(Drink.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }
+    
+    public void loadDataCombobox() {
+//        clear 
+        categoryCbb.removeAllItems();
+        //get Data
+        ArrayList<String> cateArr = new ArrayList<String>();
+        rsSet = fetchDataTable("drinkType");
+        
+        try {
+            while(rsSet.next()){
+                //add value get from DB to array
+                cateArr.add(rsSet.getString("drinkTypeName")+" - "+rsSet.getInt("drinkTypeID"));
+            }
+//        then add to combobox
+            for(String str : cateArr){
+                categoryCbb.addItem(str);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Drink.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         
+         
+    }
     public ImageIcon ResizeImage(String ImagePath)
     {
         ImageIcon MyImage = new ImageIcon(ImagePath);
@@ -62,6 +192,15 @@ public class Drink extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         drinkTable = new javax.swing.JTable();
+        jPanel6 = new javax.swing.JPanel();
+        cateAddInput = new javax.swing.JButton();
+        delCateInput = new javax.swing.JButton();
+        cateNameInput = new javax.swing.JLabel();
+        nameCateInput = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        jPanel5 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jList1 = new javax.swing.JList<>();
         jPanel4 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -91,6 +230,7 @@ public class Drink extends javax.swing.JFrame {
         editBtn.setBackground(new java.awt.Color(204, 204, 204));
         editBtn.setFont(new java.awt.Font("Tw Cen MT", 1, 24)); // NOI18N
         editBtn.setText("Edit");
+        editBtn.setEnabled(false);
         editBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editBtnActionPerformed(evt);
@@ -100,6 +240,7 @@ public class Drink extends javax.swing.JFrame {
         deleteBtn.setBackground(new java.awt.Color(204, 204, 204));
         deleteBtn.setFont(new java.awt.Font("Tw Cen MT", 1, 24)); // NOI18N
         deleteBtn.setText("Delete");
+        deleteBtn.setEnabled(false);
         deleteBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteBtnActionPerformed(evt);
@@ -141,9 +282,9 @@ public class Drink extends javax.swing.JFrame {
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(nameInput)
                             .addComponent(categoryCbb, 0, 200, Short.MAX_VALUE))))
-                .addGap(29, 29, 29)
+                .addGap(33, 33, 33)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(imageBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 196, Short.MAX_VALUE)
+                    .addComponent(imageBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE)
                     .addComponent(imageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(19, 19, 19))
         );
@@ -151,8 +292,11 @@ public class Drink extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(imageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
                             .addComponent(nameInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -165,16 +309,13 @@ public class Drink extends javax.swing.JFrame {
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel8)
                             .addComponent(categoryCbb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(deleteBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(editBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(Create, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(imageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(imageBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(40, Short.MAX_VALUE))
+                        .addGap(43, 43, 43)))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(deleteBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(editBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Create, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(imageBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "LIST DRINKS", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tw Cen MT", 0, 24))); // NOI18N
@@ -184,17 +325,9 @@ public class Drink extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "Name", "Price", "Category"
+                "ID", "Name", "Price"
             }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
+        ));
         drinkTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 drinkTableMouseClicked(evt);
@@ -210,17 +343,109 @@ public class Drink extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel3Layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 535, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 198, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel3Layout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+        );
+
+        jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "CATEGORIES", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tw Cen MT", 0, 24))); // NOI18N
+
+        cateAddInput.setText("Add");
+        cateAddInput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cateAddInputActionPerformed(evt);
+            }
+        });
+
+        delCateInput.setText("Delete");
+        delCateInput.setEnabled(false);
+        delCateInput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                delCateInputActionPerformed(evt);
+            }
+        });
+
+        cateNameInput.setFont(new java.awt.Font("Tw Cen MT", 0, 18)); // NOI18N
+        cateNameInput.setText("Name :");
+
+        jLabel2.setFont(new java.awt.Font("Tw Cen MT", 0, 14)); // NOI18N
+        jLabel2.setText("Lorem ipsum subheader");
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addComponent(cateAddInput)
+                        .addGap(2, 2, 2)
+                        .addComponent(delCateInput))
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cateNameInput)
+                            .addComponent(jLabel2))
+                        .addGap(120, 120, 120)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addComponent(nameCateInput, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(14, Short.MAX_VALUE))
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(cateNameInput)
+                .addGap(18, 18, 18)
+                .addComponent(nameCateInput, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
+                .addGap(35, 35, 35)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cateAddInput)
+                    .addComponent(delCateInput))
+                .addGap(19, 19, 19))
+        );
+
+        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "LIST CATEGORIES", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tw Cen MT", 0, 24))); // NOI18N
+
+        jList1.setFont(new java.awt.Font("Montserrat", 0, 18)); // NOI18N
+        jList1.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jList1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jList1MouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(jList1);
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1)
+                .addContainerGap())
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addComponent(jScrollPane1)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -229,18 +454,28 @@ public class Drink extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, Short.MAX_VALUE)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
         jTabbedPane1.addTab("Drink", jPanel1);
@@ -249,14 +484,14 @@ public class Drink extends javax.swing.JFrame {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 605, Short.MAX_VALUE)
+            .addGap(0, 902, Short.MAX_VALUE)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 515, Short.MAX_VALUE)
+            .addGap(0, 526, Short.MAX_VALUE)
         );
 
-        jTabbedPane1.addTab("tab2", jPanel4);
+        jTabbedPane1.addTab("Category", jPanel4);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -282,13 +517,82 @@ public class Drink extends javax.swing.JFrame {
     private void CreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreateActionPerformed
         // TODO add your handling code here:
         //verify fields not blank
-           
+        if("".equals(nameInput.getText())){
+           JOptionPane.showMessageDialog(this, "Name required !");
+        }else if("".equals(priceInput.getText())){
+            JOptionPane.showMessageDialog(this, "Price required !");
+        }else if("".equals(finalPath)){
+            JOptionPane.showMessageDialog(this, "Image required !");
+        }else{
+            try {
+                //Create new drinks
+              
+                String name = nameInput.getText();
+                String price = priceInput.getText();
+                String path = finalPath;
+                String categoryID = categoryCbb.getSelectedItem().toString().split(" - ")[1];
+                System.out.print(path);
+                
+                String sql = "INSERT INTO drink(drinkName, drinkTypeID, price, image) VALUES (?,?,?,?)";
+                prStmt = con.prepareStatement(sql);
+                // replace these with ? value in sql query :D
+                prStmt.setString(1, name);
+                prStmt.setInt(2,Integer.parseInt(categoryID));
+                prStmt.setDouble(3, Double.parseDouble(price));
+                prStmt.setString(4, path);
+                prStmt.executeUpdate();
+                JOptionPane.showMessageDialog(this, "Created Successful :D");
+                loadDataToTable();
+                ResetForm();
+                
+                
+            } catch (SQLException ex) {
+                Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+            }
+             
+        }
 
         
     }//GEN-LAST:event_CreateActionPerformed
 
     private void editBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed
         // TODO add your handling code here:
+          //verify fields not blank
+        if("".equals(nameInput.getText())){
+           JOptionPane.showMessageDialog(this, "Name required !");
+        }else if("".equals(priceInput.getText())){
+            JOptionPane.showMessageDialog(this, "Price required !");
+        }else if("".equals(finalPath)){
+            JOptionPane.showMessageDialog(this, "Image required !");
+        }else{
+            try {
+                //Create new drinks
+                String id = drinkTable.getModel().getValueAt(drinkTable.getSelectedRow(), 0).toString();
+                String name = nameInput.getText();
+                String price = priceInput.getText();
+                String path = finalPath;
+                String categoryID = categoryCbb.getSelectedItem().toString().split(" - ")[1];
+//                System.out.print(path);
+                
+                String sql = "UPDATE drink SET drinkName = ?, drinkTypeID = ?, price = ?, image =? WHERE drinkID = ?";
+                prStmt = con.prepareStatement(sql);
+                // replace these with ? value in sql query :D
+                prStmt.setString(1, name);
+                prStmt.setInt(2,Integer.parseInt(categoryID));
+                prStmt.setDouble(3, Double.parseDouble(price));
+                prStmt.setString(4, path);
+                prStmt.setString(5, id);
+                prStmt.executeUpdate();
+                JOptionPane.showMessageDialog(this, "Update Successful :D");
+                loadDataToTable();
+                ResetForm();
+                
+                
+            } catch (SQLException ex) {
+                Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+            }
+             
+        }
 
     }//GEN-LAST:event_editBtnActionPerformed
 
@@ -298,9 +602,37 @@ public class Drink extends javax.swing.JFrame {
     }//GEN-LAST:event_deleteBtnActionPerformed
 
     private void drinkTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drinkTableMouseClicked
-        // TODO add your handling code here:
-        //create a Table model
-       
+        try {
+            // TODO add your handling code here:
+            //create a Table model
+            editBtn.setEnabled(true);
+            deleteBtn.setEnabled(true);
+            
+            //
+            int row = drinkTable.getSelectedRow();
+            String id = drinkTable.getModel().getValueAt(row, 0).toString();
+            String name = drinkTable.getModel().getValueAt(row, 1).toString();
+            String price = drinkTable.getModel().getValueAt(row, 2).toString();
+            String categoryName = fetchSingleDrinkIDToDrinkTypeName(Integer.parseInt(id));
+            
+            //get path
+            String path = "";
+            String sql = "SELECT * FROM drink WHERE drinkID=" + id;
+            rsSet = prStmt.executeQuery(sql);
+            while(rsSet.next()){
+                finalPath = rsSet.getString("image");
+                path = rsSet.getString("image");
+            }
+            
+            //set values
+            nameInput.setText(name);
+            priceInput.setText(price+"");
+            categoryCbb.setSelectedItem(categoryName);
+            imageLabel.setIcon(ResizeImage(path));
+        } catch (SQLException ex) {
+            Logger.getLogger(Drink.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }//GEN-LAST:event_drinkTableMouseClicked
 
     private void imageBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imageBtnActionPerformed
@@ -317,14 +649,65 @@ public class Drink extends javax.swing.JFrame {
         
         if(result == JFileChooser.APPROVE_OPTION){
               File selectedFile = file.getSelectedFile();
-              String path2 = selectedFile.getAbsolutePath();
-              imageLabel.setIcon(ResizeImage(path2));
+              finalPath = selectedFile.getAbsolutePath();
+              imageLabel.setIcon(ResizeImage(finalPath));
         }else if(result == JFileChooser.CANCEL_OPTION){
              JOptionPane.showMessageDialog(this, "No File selected !");
         }
         
         
     }//GEN-LAST:event_imageBtnActionPerformed
+
+    private void cateAddInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cateAddInputActionPerformed
+        // TODO add your handling code here:
+        String name = nameCateInput.getText();
+        if("".equals(name)){
+            JOptionPane.showMessageDialog(this, "Input required");
+        }else{
+            try {
+                String sql = "INSERT INTO drinkType(drinkTypeName) VALUES (?)";
+                prStmt = con.prepareStatement(sql);
+                prStmt.setString(1, name);
+                prStmt.executeUpdate();
+                JOptionPane.showMessageDialog(this, "Created Successful :D");
+                loadDataToList();
+                loadDataCombobox();
+                //clear input
+                nameCateInput.setText("");
+            } catch (SQLException ex) {
+                Logger.getLogger(Drink.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        
+        
+    }//GEN-LAST:event_cateAddInputActionPerformed
+
+    private void delCateInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delCateInputActionPerformed
+        // TODO add your handling code here:
+         // TODO add your handling code here:
+           String id = jList1.getSelectedValue().split(" - ")[1].toString();
+           String sql = "DELETE FROM drinktype WHERE drinktypeID = ?";
+        try {
+            prStmt = con.prepareStatement(sql);
+            prStmt.setInt(1, Integer.parseInt(id));
+            prStmt.executeUpdate();
+             JOptionPane.showMessageDialog(this, "Delete Successfull :D");
+                loadDataToList();
+                loadDataCombobox();
+              nameCateInput.setText("");
+        } catch (SQLException ex) {
+            Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+        }
+           
+    }//GEN-LAST:event_delCateInputActionPerformed
+
+    private void jList1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jList1MouseClicked
+        // TODO add your handling code here:
+        delCateInput.setEnabled(true);
+        String name = jList1.getSelectedValue().split(" - ")[0].toString();
+        nameCateInput.setText(name);
+    }//GEN-LAST:event_jList1MouseClicked
 
     /**
      * @param args the command line arguments
@@ -363,23 +746,67 @@ public class Drink extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Create;
+    private javax.swing.JButton cateAddInput;
+    private javax.swing.JLabel cateNameInput;
     private javax.swing.JComboBox<String> categoryCbb;
+    private javax.swing.JButton delCateInput;
     private javax.swing.JButton deleteBtn;
     private javax.swing.JTable drinkTable;
     private javax.swing.JButton editBtn;
     private javax.swing.JButton imageBtn;
     private javax.swing.JLabel imageLabel;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTextField nameCateInput;
     private javax.swing.JTextField nameInput;
     private javax.swing.JTextField priceInput;
     // End of variables declaration//GEN-END:variables
+
+    private void ResetForm() {
+        nameInput.setText("");
+        priceInput.setText("");
+        categoryCbb.setSelectedIndex(0);
+        imageLabel.setIcon(null);
+         editBtn.setEnabled(false);
+        deleteBtn.setEnabled(false);
+    }
+
+    private String fetchSingleDrinkIDToDrinkTypeName(int idDrink) {
+       
+        String name = null;
+         try {
+             //idDrink -> rs drinkType
+            String drinkQuery = "SELECT * FROM drink WHERE drinkID="+idDrink;
+            prStmt = con.prepareStatement(drinkQuery);
+            rsSet = prStmt.executeQuery();
+            while(rsSet.next()){
+                    int idTypeDrink = rsSet.getInt("drinkTypeID");
+                    String typeDrinkQuery = "SELECT * FROM drinktype WHERE drinkTypeID="+idTypeDrink;
+                    prStmt = con.prepareStatement(typeDrinkQuery);
+                    rsSet = prStmt.executeQuery();
+                    while(rsSet.next()){
+                        String typeName = rsSet.getString("drinkTypeName");
+                        name =typeName +" - "+idTypeDrink;
+                    }
+            }
+                    } catch (SQLException ex) {
+            Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return name;
+    }
+
+    
 }

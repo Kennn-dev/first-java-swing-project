@@ -548,7 +548,7 @@ public class CreateEmployee extends javax.swing.JFrame {
             int row = jTable1.getSelectedRow();
             String id = jTable1.getModel().getValueAt(row, 0).toString();
             rsSet = fetchSingleEmployee(id);
-            ResultSetMetaData metaData = rsSet.getMetaData();
+//            ResultSetMetaData metaData = rsSet.getMetaData();
 //            cursor = metaData.getColumnCount();
             
             
