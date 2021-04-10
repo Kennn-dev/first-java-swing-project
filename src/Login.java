@@ -175,8 +175,12 @@ public class Login extends javax.swing.JFrame {
                     
                     //Redirect to dashboard with specific data
                     int id = rsSet.getInt("employeeID");
+                    if(role == "Admin"){
+                            new Main(id,name,role).setVisible(true);
+                    }else{
+                        new ForEmployee().setVisible(true);
+                    }
                     
-                    new Main(id,name,role).setVisible(true);
                 }else{
                     //login fail
                     JOptionPane.showMessageDialog(this, "Wrong username or password :D");
@@ -187,7 +191,7 @@ public class Login extends javax.swing.JFrame {
 ////              fetchEmployeeData();
 //                ResetForm();
             } catch (SQLException ex) {
-                Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -203,10 +207,10 @@ public class Login extends javax.swing.JFrame {
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection("jdbc:mysql://localhost/coffee_shop", "root", "");
         }catch (SQLException ex) {
-                Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
      
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }

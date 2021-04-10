@@ -172,7 +172,7 @@ public class Main extends javax.swing.JFrame {
     private void employeeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_employeeBtnActionPerformed
         // TODO add your handling code here:
         //open jframe
-        CreateEmployee f = new CreateEmployee();
+        Employee f = new Employee();
         f.setVisible(true);
     }//GEN-LAST:event_employeeBtnActionPerformed
 

@@ -35,6 +35,7 @@ public class Drink extends javax.swing.JFrame {
      * Creates new form Drink
     
    */
+    
     Connection con;
     PreparedStatement prStmt;
     ResultSet rsSet;
@@ -52,10 +53,10 @@ public class Drink extends javax.swing.JFrame {
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection("jdbc:mysql://localhost/coffee_shop", "root", "");
         }catch (SQLException ex) {
-                Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
      
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }
@@ -67,7 +68,7 @@ public class Drink extends javax.swing.JFrame {
             rsSet = prStmt.executeQuery();
             
             } catch (SQLException ex) {
-            Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
         }
         return rsSet;
     }
@@ -81,7 +82,7 @@ public class Drink extends javax.swing.JFrame {
             rsSet = prStmt.executeQuery();
             
                     } catch (SQLException ex) {
-            Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
         }
         return rsSet;
     }
@@ -111,7 +112,7 @@ public class Drink extends javax.swing.JFrame {
                 drinkTable.setModel(table);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         
@@ -201,7 +202,10 @@ public class Drink extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList<>();
+        backBtn = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -348,7 +352,7 @@ public class Drink extends javax.swing.JFrame {
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 209, Short.MAX_VALUE)
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel3Layout.createSequentialGroup()
                     .addContainerGap()
@@ -444,9 +448,16 @@ public class Drink extends javax.swing.JFrame {
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addComponent(jScrollPane1)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
                 .addContainerGap())
         );
+
+        backBtn.setText("Back");
+        backBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                backBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -460,7 +471,8 @@ public class Drink extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(backBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -474,8 +486,12 @@ public class Drink extends javax.swing.JFrame {
                     .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(backBtn)
+                        .addContainerGap())))
         );
 
         jTabbedPane1.addTab("Drink", jPanel1);
@@ -491,7 +507,17 @@ public class Drink extends javax.swing.JFrame {
             .addGap(0, 526, Short.MAX_VALUE)
         );
 
-        jTabbedPane1.addTab("Category", jPanel4);
+        jTabbedPane1.addTab("", jPanel4);
+
+        jMenu1.setText("Back");
+        jMenu1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenu1MouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(jMenu1);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -514,149 +540,36 @@ public class Drink extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void CreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreateActionPerformed
+    private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtnActionPerformed
         // TODO add your handling code here:
-        //verify fields not blank
-        if("".equals(nameInput.getText())){
-           JOptionPane.showMessageDialog(this, "Name required !");
-        }else if("".equals(priceInput.getText())){
-            JOptionPane.showMessageDialog(this, "Price required !");
-        }else if("".equals(finalPath)){
-            JOptionPane.showMessageDialog(this, "Image required !");
-        }else{
-            try {
-                //Create new drinks
-              
-                String name = nameInput.getText();
-                String price = priceInput.getText();
-                String path = finalPath;
-                String categoryID = categoryCbb.getSelectedItem().toString().split(" - ")[1];
-                System.out.print(path);
-                
-                String sql = "INSERT INTO drink(drinkName, drinkTypeID, price, image) VALUES (?,?,?,?)";
-                prStmt = con.prepareStatement(sql);
-                // replace these with ? value in sql query :D
-                prStmt.setString(1, name);
-                prStmt.setInt(2,Integer.parseInt(categoryID));
-                prStmt.setDouble(3, Double.parseDouble(price));
-                prStmt.setString(4, path);
-                prStmt.executeUpdate();
-                JOptionPane.showMessageDialog(this, "Created Successful :D");
-                loadDataToTable();
-                ResetForm();
-                
-                
-            } catch (SQLException ex) {
-                Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
-            }
-             
-        }
+        this.toBack();
+        setVisible(false);
+    }//GEN-LAST:event_backBtnActionPerformed
 
-        
-    }//GEN-LAST:event_CreateActionPerformed
-
-    private void editBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed
+    private void jList1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jList1MouseClicked
         // TODO add your handling code here:
-          //verify fields not blank
-        if("".equals(nameInput.getText())){
-           JOptionPane.showMessageDialog(this, "Name required !");
-        }else if("".equals(priceInput.getText())){
-            JOptionPane.showMessageDialog(this, "Price required !");
-        }else if("".equals(finalPath)){
-            JOptionPane.showMessageDialog(this, "Image required !");
-        }else{
-            try {
-                //Create new drinks
-                String id = drinkTable.getModel().getValueAt(drinkTable.getSelectedRow(), 0).toString();
-                String name = nameInput.getText();
-                String price = priceInput.getText();
-                String path = finalPath;
-                String categoryID = categoryCbb.getSelectedItem().toString().split(" - ")[1];
-//                System.out.print(path);
-                
-                String sql = "UPDATE drink SET drinkName = ?, drinkTypeID = ?, price = ?, image =? WHERE drinkID = ?";
-                prStmt = con.prepareStatement(sql);
-                // replace these with ? value in sql query :D
-                prStmt.setString(1, name);
-                prStmt.setInt(2,Integer.parseInt(categoryID));
-                prStmt.setDouble(3, Double.parseDouble(price));
-                prStmt.setString(4, path);
-                prStmt.setString(5, id);
-                prStmt.executeUpdate();
-                JOptionPane.showMessageDialog(this, "Update Successful :D");
-                loadDataToTable();
-                ResetForm();
-                
-                
-            } catch (SQLException ex) {
-                Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
-            }
-             
-        }
+        delCateInput.setEnabled(true);
+        String name = jList1.getSelectedValue().split(" - ")[0].toString();
+        nameCateInput.setText(name);
+    }//GEN-LAST:event_jList1MouseClicked
 
-    }//GEN-LAST:event_editBtnActionPerformed
-
-    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
+    private void delCateInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delCateInputActionPerformed
         // TODO add your handling code here:
-     
-    }//GEN-LAST:event_deleteBtnActionPerformed
-
-    private void drinkTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drinkTableMouseClicked
+        // TODO add your handling code here:
+        String id = jList1.getSelectedValue().split(" - ")[1].toString();
+        String sql = "DELETE FROM drinktype WHERE drinktypeID = ?";
         try {
-            // TODO add your handling code here:
-            //create a Table model
-            editBtn.setEnabled(true);
-            deleteBtn.setEnabled(true);
-            
-            //
-            int row = drinkTable.getSelectedRow();
-            String id = drinkTable.getModel().getValueAt(row, 0).toString();
-            String name = drinkTable.getModel().getValueAt(row, 1).toString();
-            String price = drinkTable.getModel().getValueAt(row, 2).toString();
-            String categoryName = fetchSingleDrinkIDToDrinkTypeName(Integer.parseInt(id));
-            
-            //get path
-            String path = "";
-            String sql = "SELECT * FROM drink WHERE drinkID=" + id;
-            rsSet = prStmt.executeQuery(sql);
-            while(rsSet.next()){
-                finalPath = rsSet.getString("image");
-                path = rsSet.getString("image");
-            }
-            
-            //set values
-            nameInput.setText(name);
-            priceInput.setText(price+"");
-            categoryCbb.setSelectedItem(categoryName);
-            imageLabel.setIcon(ResizeImage(path));
+            prStmt = con.prepareStatement(sql);
+            prStmt.setInt(1, Integer.parseInt(id));
+            prStmt.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Delete Successfull :D");
+            loadDataToList();
+            loadDataCombobox();
+            nameCateInput.setText("");
         } catch (SQLException ex) {
-            Logger.getLogger(Drink.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-    }//GEN-LAST:event_drinkTableMouseClicked
-
-    private void imageBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imageBtnActionPerformed
-        // TODO add your handling code here:
-        //file format
-        JFileChooser file = new JFileChooser();
-        String path = new File("").getAbsolutePath();
-        file.setCurrentDirectory(new File(path));
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("*.Images","jpg","jpeg","png");
-        file.addChoosableFileFilter(filter);
-       
-//      show dialog to open file
-         int result = file.showSaveDialog(null);
-        
-        if(result == JFileChooser.APPROVE_OPTION){
-              File selectedFile = file.getSelectedFile();
-              finalPath = selectedFile.getAbsolutePath();
-              imageLabel.setIcon(ResizeImage(finalPath));
-        }else if(result == JFileChooser.CANCEL_OPTION){
-             JOptionPane.showMessageDialog(this, "No File selected !");
-        }
-        
-        
-    }//GEN-LAST:event_imageBtnActionPerformed
+    }//GEN-LAST:event_delCateInputActionPerformed
 
     private void cateAddInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cateAddInputActionPerformed
         // TODO add your handling code here:
@@ -678,36 +591,148 @@ public class Drink extends javax.swing.JFrame {
                 Logger.getLogger(Drink.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
-        
-        
     }//GEN-LAST:event_cateAddInputActionPerformed
 
-    private void delCateInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delCateInputActionPerformed
-        // TODO add your handling code here:
-         // TODO add your handling code here:
-           String id = jList1.getSelectedValue().split(" - ")[1].toString();
-           String sql = "DELETE FROM drinktype WHERE drinktypeID = ?";
+    private void drinkTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drinkTableMouseClicked
         try {
-            prStmt = con.prepareStatement(sql);
-            prStmt.setInt(1, Integer.parseInt(id));
-            prStmt.executeUpdate();
-             JOptionPane.showMessageDialog(this, "Delete Successfull :D");
-                loadDataToList();
-                loadDataCombobox();
-              nameCateInput.setText("");
-        } catch (SQLException ex) {
-            Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
-        }
-           
-    }//GEN-LAST:event_delCateInputActionPerformed
+            // TODO add your handling code here:
+            //create a Table model
+            editBtn.setEnabled(true);
+            deleteBtn.setEnabled(true);
 
-    private void jList1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jList1MouseClicked
+            //
+            int row = drinkTable.getSelectedRow();
+            String id = drinkTable.getModel().getValueAt(row, 0).toString();
+            String name = drinkTable.getModel().getValueAt(row, 1).toString();
+            String price = drinkTable.getModel().getValueAt(row, 2).toString();
+            String categoryName = fetchSingleDrinkIDToDrinkTypeName(Integer.parseInt(id));
+
+            //get path
+            String path = "";
+            String sql = "SELECT * FROM drink WHERE drinkID=" + id;
+            rsSet = prStmt.executeQuery(sql);
+            while(rsSet.next()){
+                finalPath = rsSet.getString("image");
+                path = rsSet.getString("image");
+            }
+
+            //set values
+            nameInput.setText(name);
+            priceInput.setText(price+"");
+            categoryCbb.setSelectedItem(categoryName);
+            imageLabel.setIcon(ResizeImage(path));
+        } catch (SQLException ex) {
+            Logger.getLogger(Drink.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_drinkTableMouseClicked
+
+    private void imageBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imageBtnActionPerformed
         // TODO add your handling code here:
-        delCateInput.setEnabled(true);
-        String name = jList1.getSelectedValue().split(" - ")[0].toString();
-        nameCateInput.setText(name);
-    }//GEN-LAST:event_jList1MouseClicked
+        //file format
+        JFileChooser file = new JFileChooser();
+        String path = new File("").getAbsolutePath();
+        file.setCurrentDirectory(new File(path));
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("*.Images","jpg","jpeg","png");
+        file.addChoosableFileFilter(filter);
+
+        //      show dialog to open file
+        int result = file.showSaveDialog(null);
+
+        if(result == JFileChooser.APPROVE_OPTION){
+            File selectedFile = file.getSelectedFile();
+            finalPath = selectedFile.getAbsolutePath();
+            imageLabel.setIcon(ResizeImage(finalPath));
+        }else if(result == JFileChooser.CANCEL_OPTION){
+            JOptionPane.showMessageDialog(this, "No File selected !");
+        }
+    }//GEN-LAST:event_imageBtnActionPerformed
+
+    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_deleteBtnActionPerformed
+
+    private void editBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed
+        // TODO add your handling code here:
+        //verify fields not blank
+        if("".equals(nameInput.getText())){
+            JOptionPane.showMessageDialog(this, "Name required !");
+        }else if("".equals(priceInput.getText())){
+            JOptionPane.showMessageDialog(this, "Price required !");
+        }else if("".equals(finalPath)){
+            JOptionPane.showMessageDialog(this, "Image required !");
+        }else{
+            try {
+                //Create new drinks
+                String id = drinkTable.getModel().getValueAt(drinkTable.getSelectedRow(), 0).toString();
+                String name = nameInput.getText();
+                String price = priceInput.getText();
+                String path = finalPath;
+                String categoryID = categoryCbb.getSelectedItem().toString().split(" - ")[1];
+                //                System.out.print(path);
+
+                String sql = "UPDATE drink SET drinkName = ?, drinkTypeID = ?, price = ?, image =? WHERE drinkID = ?";
+                prStmt = con.prepareStatement(sql);
+                // replace these with ? value in sql query :D
+                prStmt.setString(1, name);
+                prStmt.setInt(2,Integer.parseInt(categoryID));
+                prStmt.setDouble(3, Double.parseDouble(price));
+                prStmt.setString(4, path);
+                prStmt.setString(5, id);
+                prStmt.executeUpdate();
+                JOptionPane.showMessageDialog(this, "Update Successful :D");
+                loadDataToTable();
+                ResetForm();
+
+            } catch (SQLException ex) {
+                Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+    }//GEN-LAST:event_editBtnActionPerformed
+
+    private void CreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreateActionPerformed
+        // TODO add your handling code here:
+        //verify fields not blank
+        if("".equals(nameInput.getText())){
+            JOptionPane.showMessageDialog(this, "Name required !");
+        }else if("".equals(priceInput.getText())){
+            JOptionPane.showMessageDialog(this, "Price required !");
+        }else if("".equals(finalPath)){
+            JOptionPane.showMessageDialog(this, "Image required !");
+        }else{
+            try {
+                //Create new drinks
+
+                String name = nameInput.getText();
+                String price = priceInput.getText();
+                String path = finalPath;
+                String categoryID = categoryCbb.getSelectedItem().toString().split(" - ")[1];
+                System.out.print(path);
+
+                String sql = "INSERT INTO drink(drinkName, drinkTypeID, price, image) VALUES (?,?,?,?)";
+                prStmt = con.prepareStatement(sql);
+                // replace these with ? value in sql query :D
+                prStmt.setString(1, name);
+                prStmt.setInt(2,Integer.parseInt(categoryID));
+                prStmt.setDouble(3, Double.parseDouble(price));
+                prStmt.setString(4, path);
+                prStmt.executeUpdate();
+                JOptionPane.showMessageDialog(this, "Created Successful :D");
+                loadDataToTable();
+                ResetForm();
+
+            } catch (SQLException ex) {
+                Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+    }//GEN-LAST:event_CreateActionPerformed
+
+    private void jMenu1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu1MouseClicked
+        // TODO add your handling code here:
+        this.setVisible(false);
+//        new Main().setVisible(true);
+    }//GEN-LAST:event_jMenu1MouseClicked
 
     /**
      * @param args the command line arguments
@@ -743,9 +768,11 @@ public class Drink extends javax.swing.JFrame {
             }
         });
     }
+   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Create;
+    private javax.swing.JButton backBtn;
     private javax.swing.JButton cateAddInput;
     private javax.swing.JLabel cateNameInput;
     private javax.swing.JComboBox<String> categoryCbb;
@@ -761,6 +788,8 @@ public class Drink extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JList<String> jList1;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -803,10 +832,13 @@ public class Drink extends javax.swing.JFrame {
                     }
             }
                     } catch (SQLException ex) {
-            Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
         }
         return name;
     }
 
     
 }
+
+
+ 

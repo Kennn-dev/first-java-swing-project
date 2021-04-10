@@ -21,13 +21,13 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Administrator
  */
-public class CreateEmployee extends javax.swing.JFrame {
+public class Employee extends javax.swing.JFrame {
 
     /**
      * Creates new form CreateEmployee
      */
    
-    public CreateEmployee() {
+    public Employee() {
         initComponents();
         Connect();
         fetchAllData("employee");
@@ -72,6 +72,8 @@ public class CreateEmployee extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -289,6 +291,16 @@ public class CreateEmployee extends javax.swing.JFrame {
                     .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
+        jMenu1.setText("Back");
+        jMenu1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenu1MouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(jMenu1);
+
+        setJMenuBar(jMenuBar1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -311,16 +323,17 @@ public class CreateEmployee extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
     public void Connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection("jdbc:mysql://localhost/coffee_shop", "root", "");
         }catch (SQLException ex) {
-                Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
      
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }
@@ -341,7 +354,7 @@ public class CreateEmployee extends javax.swing.JFrame {
             rsSet = prStmt.executeQuery();
             
                     } catch (SQLException ex) {
-            Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
         }
         return rsSet;
     }
@@ -355,7 +368,7 @@ public class CreateEmployee extends javax.swing.JFrame {
             rsSet = prStmt.executeQuery();
             
                     } catch (SQLException ex) {
-            Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
         }
         return rsSet;
     }
@@ -388,7 +401,7 @@ public class CreateEmployee extends javax.swing.JFrame {
                 jTable1.setModel(table);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }
@@ -442,7 +455,7 @@ public class CreateEmployee extends javax.swing.JFrame {
                 ResetForm();
                 
             } catch (SQLException ex) {
-                Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
             }
              
         }
@@ -512,7 +525,7 @@ public class CreateEmployee extends javax.swing.JFrame {
                 Create.setEnabled(true);
                 
             } catch (SQLException ex) {
-                Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
             }
              
         }
@@ -531,7 +544,7 @@ public class CreateEmployee extends javax.swing.JFrame {
                 ResetForm();
                 Create.setEnabled(true);
         } catch (SQLException ex) {
-            Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
         }
            
           
@@ -583,9 +596,15 @@ public class CreateEmployee extends javax.swing.JFrame {
                 
             }
         } catch (SQLException ex) {
-            Logger.getLogger(CreateEmployee.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jTable1MouseClicked
+
+    private void jMenu1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu1MouseClicked
+        // TODO add your handling code here:
+        this.setVisible(false);
+//        new Main().setVisible(true);
+    }//GEN-LAST:event_jMenu1MouseClicked
 
     /**
      * @param args the command line arguments
@@ -604,20 +623,21 @@ public class CreateEmployee extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(CreateEmployee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Employee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(CreateEmployee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Employee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(CreateEmployee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Employee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(CreateEmployee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Employee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new CreateEmployee().setVisible(true);
+                new Employee().setVisible(true);
             }
         });
     }
@@ -637,6 +657,8 @@ public class CreateEmployee extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
@@ -649,3 +671,4 @@ public class CreateEmployee extends javax.swing.JFrame {
     private javax.swing.JTextField salaryInput;
     // End of variables declaration//GEN-END:variables
 }
+
