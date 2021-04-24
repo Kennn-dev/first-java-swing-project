@@ -1,0 +1,18 @@
+-----
+ID :2
+Drink :CatKhox - 2
+Amount :2
+Total :224000.0
+-----
+ID :2
+Drink :CatKhox - 2
+Amount :1
+Total :112000.0
+-----
+ID :3
+Drink :MeoReee - 3
+Amount :1
+Total :35000.0
+-----
+-------------------------------
+Grand Total :371000.0

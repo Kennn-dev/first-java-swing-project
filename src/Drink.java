@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,6 +39,7 @@ public class Drink extends javax.swing.JFrame {
     
     Connection con;
     PreparedStatement prStmt;
+    Statement stmt;
     ResultSet rsSet;
     DefaultTableModel table;
     String finalPath ;
@@ -648,7 +650,22 @@ public class Drink extends javax.swing.JFrame {
     }//GEN-LAST:event_imageBtnActionPerformed
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
-        // TODO add your handling code here:
+        try {
+            // TODO add your handling code here:
+            String id = drinkTable.getModel().getValueAt(drinkTable.getSelectedRow(), 0).toString();
+//            System.out.println(id);
+            String sql = "delete from drink WHERE drinkID = "+id;
+            stmt = con.createStatement();
+            stmt.executeUpdate(sql);
+            JOptionPane.showMessageDialog(this, "Delete Successful :D");
+            loadDataToTable();
+            ResetForm();
+            
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Delete fail !");
+            Logger.getLogger(Drink.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }//GEN-LAST:event_deleteBtnActionPerformed
 
     private void editBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed

@@ -1,5 +1,11 @@
 
 import java.awt.Image;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -14,9 +20,12 @@ import java.text.DateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -66,6 +75,7 @@ public class ForEmployee extends javax.swing.JFrame {
         totalAmountInput = new javax.swing.JTextField();
         saveBtn = new javax.swing.JButton();
         deleteBtn = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         cateCbb = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
@@ -105,7 +115,7 @@ public class ForEmployee extends javax.swing.JFrame {
 
         totalAmountInput.setEditable(false);
 
-        saveBtn.setText("Print & Save");
+        saveBtn.setText("Save");
         saveBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveBtnActionPerformed(evt);
@@ -119,6 +129,13 @@ public class ForEmployee extends javax.swing.JFrame {
             }
         });
 
+        jButton2.setText("Export");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -128,9 +145,12 @@ public class ForEmployee extends javax.swing.JFrame {
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 538, Short.MAX_VALUE)
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(totalAmountInput, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(totalAmountInput, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jButton2))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(deleteBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -148,7 +168,9 @@ public class ForEmployee extends javax.swing.JFrame {
                     .addComponent(totalAmountInput, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(deleteBtn)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(deleteBtn)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -165,10 +187,10 @@ public class ForEmployee extends javax.swing.JFrame {
             }
         });
         cateCbb.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-            }
             public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
                 cateCbbInputMethodTextChanged(evt);
+            }
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
             }
         });
 
@@ -192,10 +214,10 @@ public class ForEmployee extends javax.swing.JFrame {
             }
         });
         qtySpinner.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-            }
             public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
                 qtySpinnerInputMethodTextChanged(evt);
+            }
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
             }
         });
         qtySpinner.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -212,10 +234,10 @@ public class ForEmployee extends javax.swing.JFrame {
 
         priceInput.setEditable(false);
         priceInput.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-            }
             public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
                 priceInputInputMethodTextChanged(evt);
+            }
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
             }
         });
 
@@ -558,9 +580,6 @@ public class ForEmployee extends javax.swing.JFrame {
               total = total+ value1;
                totalAmountInput.setText(total+"");
         }
-        
-       
-        
     }
     
     public void removeSelectedRows(JTable table){
@@ -569,12 +588,21 @@ public class ForEmployee extends javax.swing.JFrame {
         for(int i=0;i<rows.length;i++){
           model.removeRow(rows[i]-i);
         }
+        
         getTotalAmount();
 }
     
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
         // TODO add your handling code here:
-        removeSelectedRows(jTable1);
+//        System.out.println(jTable1.getSelectedRow());
+        if(jTable1.getSelectedRow() == -1){
+//              System.out.println(jTable1.getSelectedRow());
+            DefaultTableModel dtm = (DefaultTableModel) jTable1.getModel();
+            dtm.setRowCount(0);
+            jTable1.setModel(dtm);
+        }else{
+             removeSelectedRows(jTable1);
+        }
     }//GEN-LAST:event_deleteBtnActionPerformed
     
     
@@ -583,6 +611,7 @@ public class ForEmployee extends javax.swing.JFrame {
     private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
         // TODO add your handling code here:
          try {
+                //Todo : SAVE
                 int idLast = 0;
                 //Get the formatted date (String)
 //              
@@ -642,6 +671,41 @@ public class ForEmployee extends javax.swing.JFrame {
         this.setVisible(false);
         new Login().setVisible(true);
     }//GEN-LAST:event_jMenu1MouseClicked
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        JFileChooser fc = new JFileChooser();
+        int response = fc.showSaveDialog(this);
+        if (response == JFileChooser.APPROVE_OPTION) {
+            //This is where a real application would open the file.
+           
+            try {
+                 File file = fc.getSelectedFile();
+                 
+                PrintWriter os = new PrintWriter(file);
+                
+                for(int i = 0 ; i < jTable1.getRowCount(); i++){
+                    if(i == 0){
+                        os.println("-----");
+                    }
+                    os.println("ID :" + jTable1.getModel().getValueAt(i, 0).toString());
+                    os.println("Drink :" + jTable1.getModel().getValueAt(i, 1).toString());
+                    os.println("Amount :" + jTable1.getModel().getValueAt(i, 2).toString());
+                    os.println("Total :" + jTable1.getModel().getValueAt(i, 3).toString());
+                    os.println("-----");
+                };
+                os.println("-------------------------------");
+                os.println("Grand Total :" + totalAmountInput.getText());
+                os.close();
+                JOptionPane.showMessageDialog(this, "Printed success.");
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(ForEmployee.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        } else {
+           
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -799,6 +863,7 @@ public class ForEmployee extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> drinkCbb;
     private javax.swing.JLabel imageLabel;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
