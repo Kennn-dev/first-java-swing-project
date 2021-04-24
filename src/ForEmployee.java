@@ -97,6 +97,7 @@ public class ForEmployee extends javax.swing.JFrame {
         jMenu1 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Orders", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tw Cen MT", 0, 18))); // NOI18N
 
@@ -187,10 +188,10 @@ public class ForEmployee extends javax.swing.JFrame {
             }
         });
         cateCbb.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
             public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
                 cateCbbInputMethodTextChanged(evt);
-            }
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
             }
         });
 
@@ -214,10 +215,10 @@ public class ForEmployee extends javax.swing.JFrame {
             }
         });
         qtySpinner.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
             public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
                 qtySpinnerInputMethodTextChanged(evt);
-            }
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
             }
         });
         qtySpinner.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -234,10 +235,10 @@ public class ForEmployee extends javax.swing.JFrame {
 
         priceInput.setEditable(false);
         priceInput.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
             public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
                 priceInputInputMethodTextChanged(evt);
-            }
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
             }
         });
 
@@ -269,7 +270,7 @@ public class ForEmployee extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel3)
                                 .addGap(18, 18, 18)
-                                .addComponent(qtySpinner)))
+                                .addComponent(qtySpinner, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)))
                         .addGap(55, 55, 55)
                         .addComponent(addBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(15, 15, 15))
@@ -688,6 +689,7 @@ public class ForEmployee extends javax.swing.JFrame {
                     if(i == 0){
                         os.println("-----");
                     }
+                    os.println("BILL RECEIPT =========================");
                     os.println("ID :" + jTable1.getModel().getValueAt(i, 0).toString());
                     os.println("Drink :" + jTable1.getModel().getValueAt(i, 1).toString());
                     os.println("Amount :" + jTable1.getModel().getValueAt(i, 2).toString());
